@@ -1,33 +1,65 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
 const app = express();
-const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-app.post('/collect', (req, res) => {
-  const data = req.body;
-  console.log("Received data:", data);
-  res.status(200).send("Data collected successfully!");
+// Serverless ke liye MongoDB Connection Caching
+let isConnected = false;
+async function connectDB() {
+  if (isConnected) return;
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    isConnected = true;
+    console.log("MongoDB connected successfully");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error;
+  }
+}
+
+// Data Schema aur Model define karein
+const dataSchema = new mongoose.Schema({
+  payload: Object,
+  createdAt: { type: Date, default: Date.now }
+});
+
+const CollectedData = mongoose.models.CollectedData || mongoose.model('CollectedData', dataSchema);
+
+// 1. Data Collect Route (POST)
+app.post('/collect', async (req, res) => {
+  try {
+    await connectDB();
+    const newData = new CollectedData({ payload: req.body });
+    await newData.save();
+    console.log("Received and saved data:", req.body);
+    res.status(200).send("Data collected and saved successfully!");
+  } catch (err) {
+    console.error("Error saving data:", err);
+    res.status(500).send("Error saving data to database.");
+  }
 });
 
 app.get('/no_think', (req, res) => {
   res.status(200).send("This is a normal website. No data is being collected.");
 });
 
-app.get('/download', (req, res) => {
-  res.download('collected_data.json', 'collected_data.json', (err) => {
-    if (err) {
-      console.error("Error sending file:", err);
-    }
-  });
+// 2. Data View / Download Route (GET) - Replaces local file download
+app.get('/download', async (req, res) => {
+  try {
+    await connectDB();
+    const allData = await CollectedData.find({});
+    res.status(200).json(allData);
+  } catch (err) {
+    console.error("Error fetching data:", err);
+    res.status(500).send("Error fetching data from database.");
+  }
 });
 
-// app.listen(port, () => {
-//   console.log(`Server running on port ${port}`);
-// });
-
-module.exports = app;
 app.get('/', (req, res) => {
   res.status(200).send("Server is running successfully!");
 });
+
+module.exports = app;
