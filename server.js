@@ -28,3 +28,6 @@ app.get('/download', (req, res) => {
 // });
 
 module.exports = app;
+app.get('/', (req, res) => {
+  res.status(200).send("Server is running successfully!");
+});
