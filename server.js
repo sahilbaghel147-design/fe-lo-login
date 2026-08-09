@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path'); // <-- 1. Yeh line add karein upar
 
 const app = express();
 
@@ -46,7 +47,7 @@ app.get('/no_think', (req, res) => {
   res.status(200).send("This is a normal website. No data is being collected.");
 });
 
-// 2. Data View / Download Route (GET) - Replaces local file download
+// 2. Data View Route (GET)
 app.get('/download', async (req, res) => {
   try {
     await connectDB();
@@ -58,8 +59,9 @@ app.get('/download', async (req, res) => {
   }
 });
 
+// 3. Root route par index.html serve karne ke liye (Yeh update karna hai)
 app.get('/', (req, res) => {
-  res.status(200).send("Server is running successfully!");
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 module.exports = app;
