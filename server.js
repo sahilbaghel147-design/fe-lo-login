@@ -9,7 +9,6 @@ app.use(bodyParser.json());
 app.post('/collect', (req, res) => {
   const data = req.body;
   console.log("Received data:", data);
-  // Save data to a file or database
   res.status(200).send("Data collected successfully!");
 });
 
