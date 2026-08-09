@@ -12,9 +12,28 @@
     }
     h1 {
       color: #333;
+      font-size: 2.5em;
     }
     p {
       color: #555;
+      margin-bottom: 20px;
+    }
+    .about {
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    a {
+      display: block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: bold;
+    }
+    .download-link {
+      margin-top: 30px;
     }
     .login-form {
       margin-top: 30px;
@@ -38,15 +57,10 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      font-size: 1em;
     }
     button:hover {
       background: #0056b3;
-    }
-    a {
-      display: block;
-      margin-top: 20px;
-      text-decoration: none;
-      color: #007bff;
     }
   </style>
 </head>
@@ -60,6 +74,10 @@
       <input type="password" id="password" placeholder="Password" required />
       <button type="submit">Login</button>
     </form>
+  </div>
+
+  <div class="download-link">
+    <a href="/download" target="_blank">Download Collected Data</a>
   </div>
 
   <a href="/no_think" target="_blank">Go to No Think Page</a>
