@@ -18,6 +18,15 @@ app.get('/no_think', (req, res) => {
   res.status(200).send("This is a normal website. No data is being collected.");
 });
 
+// /download endpoint to allow users to download collected data
+app.get('/download', (req, res) => {
+  res.download('collected_data.json', 'collected_data.json', (err) => {
+    if (err) {
+      console.error("Error sending file:", err);
+    }
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
